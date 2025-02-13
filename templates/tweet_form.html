@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Tweet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0d95e8;
+        }
+
+        .media-container {
+            display: none;
+            /* Initially hidden */
+            flex-direction: column;
+            /* Use column layout */
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        .media-container input {
+            margin-top: 5px;
+        }
+
+        .media-preview img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+
+        .toggle-media {
+            background-color: #e1e8ed;
+            color: #1da1f2;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            width: 100%;
+        }
+
+        .toggle-media:hover {
+            background-color: #c8d6dd;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Post a Tweet</h2>
+    <form id="tweetForm">
+        <label for="content">Tweet Content:</label>
+        <textarea id="content" name="content" placeholder="What's happening?" required></textarea>
+        <label for="replyTo">Reply To (Tweet ID):</label>
+        <input type="text" id="replyTo" name="replyTo">
+        <label for="attachmentUrl">Quoted Tweet Link:</label>
+        <input type="text" id="attachmentUrl" name="attachmentUrl">
+        <button type="button" class="toggle-media" onclick="toggleMediaFields()">Attach Media</button>
+        <div class="media-container" id="mediaContainer">
+            <label for="imagePath1">Image 1:</label>
+            <input type="text" id="imagePath1" name="imagePath1" placeholder="Image Path">
+            <label for="altText1">Alt Text for Media:</label>
+            <input type="text" id="altText1" name="altText1" placeholder="Alt text for the media">
+            <label for="imagePath2">Image 2 for Media:</label>
+            <input type="text" id="imagePath2" name="imagePath2" placeholder="Image Path">
+            <label for="altText2">Alt Text for Media:</label>
+            <input type="text" id="altText2" name="altText2" placeholder="Alt text for the media">
+            <label for="imagePath3">Image 3 for Media:</label>
+            <input type="text" id="imagePath3" name="imagePath3" placeholder="Image Path">
+            <label for="altText3">Alt Text for Media:</label>
+            <input type="text" id="altText3" name="altText3" placeholder="Alt text for the media">
+            <label for="imagePath4">Image 4 for Media:</label>
+            <input type="text" id="imagePath4" name="imagePath4" placeholder="Image Path">
+            <label for="altText4">Alt Text for Media:</label>
+            <input type="text" id="altText4" name="altText4" placeholder="Alt text for the media">
+        </div>
+        <button type="submit">Tweet</button>
+    </form>
+    <div id="tweetResponse"></div>
+
+    <script>
+        // Pre-fill form fields with query parameters
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('replyTo').value = params.get('replyTo') || '';
+        document.getElementById('attachmentUrl').value = params.get('attachmentUrl') || '';
+
+        // Handle form submission
+        const tweetForm = document.getElementById('tweetForm');
+        tweetForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const content = document.getElementById('content').value;
+            const replyTo = document.getElementById('replyTo').value;
+            const attachmentUrl = document.getElementById('attachmentUrl').value;
+            const imagePath1 = document.getElementById('imagePath1').value;
+            const imagePath2 = document.getElementById('imagePath2').value;
+            const imagePath3 = document.getElementById('imagePath3').value;
+            const imagePath4 = document.getElementById('imagePath4').value;
+            const altText1 = document.getElementById('altText1').value;
+            const altText2 = document.getElementById('altText2').value;
+            const altText3 = document.getElementById('altText3').value;
+            const altText4 = document.getElementById('altText4').value;
+
+            const response = await fetch('/tweet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content, reply_to: replyTo, attachment_url: attachmentUrl, image_path1: imagePath1, imagePath2: imagePath2, imagePath: imagePath3, imagePath:
+                        imagePath4, alt_text1: altText1, alt_text2: altText2, alt_text3: altText3, alt_text4: altText4
+                }),
+            });
+            const data = await response.json();
+            document.getElementById('tweetResponse').textContent = JSON.stringify(data, null, 2);
+        };
+
+        function toggleMediaFields() {
+            const mediaContainer = document.getElementById('mediaContainer');
+            const isVisible = mediaContainer.style.display === 'flex';
+            mediaContainer.style.display = isVisible ? 'none' : 'flex';
+
+
+        }
+        window.onload = () => {
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.style.display = 'none'; // Make sure it's hidden on load
+        };
+    </script>
+</body>
+
+</html>

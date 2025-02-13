@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TweetAway</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+        }
+
+        .navbar {
+            background-color: #1da1f2;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 20px;
+            box-sizing: border-box;
+        }
+
+        .navbar__left {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar h1 {
+            margin: 0;
+        }
+
+        #searchForm {
+            display: flex;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-form input {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-form button {
+            padding: 8px 16px;
+            background-color: #fff;
+            color: #1da1f2;
+            border: 1px solid #1da1f2;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background-color: #e1f5ff;
+        }
+
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .left-column {
+            background-color: #f5f8fa;
+            border-right: 1px solid #ddd;
+            flex: 1;
+        }
+
+        .middle-column {
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            flex: 2;
+        }
+
+        .tweet.current-tweet {
+            border-left: 3px solid #1da1f2;
+            padding-left: 10px;
+            margin-top: 10px;
+            background-color: #ffffff;
+            border-radius: 4px;
+        }
+
+
+        .right-column {
+            background-color: #f5f8fa;
+            flex: 2;
+        }
+
+        .profile {
+            text-align: center;
+            padding: 10px;
+
+        }
+
+        .profile img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .tweet {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .notification {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .container-buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .special-button2 {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #1da1f2;
+            color: white;
+            cursor: pointer;
+        }
+
+        .special-button2:hover {
+            background-color: #0d95e8;
+        }
+
+        .special-button {
+            background-color: #e1e8ed;
+            color: #1da1f2;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            width: 100%;
+        }
+
+        .special-button:hover {
+            background-color: #c8d6dd;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tweet-detail {
+            margin-top: 20px;
+        }
+
+        .tweet-detail button {
+            margin-top: 10px;
+        }
+
+        .replies {
+            margin-top: 20px;
+        }
+
+        .tweet.original-tweet {
+            border-left: 3px solid #ccc;
+            padding-left: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .reply {
+            padding-left: 20px;
+            margin-bottom: 10px;
+            border-left: 2px solid #ccc;
+        }
+
+        .media {
+            margin-top: 10px;
+        }
+
+        .media img {
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .media video {
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .user-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .follow-button,
+        .like-button,
+        .dark-blue-button,
+        .green-button,
+        .green-button--active,
+        .block-button,
+        .gray-button,
+        .like-button--active,
+        .dark-blue-button--active,
+        .blue-button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .follow-button {
+            background-color: #1da1f2;
+            color: white;
+        }
+
+        .like-button {
+            color: #f3b04e;
+            background-color: #e1e8ed
+        }
+
+        .gray-button {
+            color: #f3b04e;
+            background-color: #e1e8ed
+        }
+
+        .green-button {
+            background-color: #e1e8ed;
+            color: #689047;
+        }
+
+        .green-button:hover,
+        .green-button--active {
+            color: #e1e8ed;
+            background-color: #689047;
+        }
+
+        .dark-blue-button {
+            background-color: #e1e8ed;
+            color: #2e04f5;
+        }
+
+        .dark-blue-button:hover,
+        .dark-blue-button--active {
+            background-color: #2e04f5;
+            color: #e1e8ed;
+        }
+
+        .block-button {
+            background-color: #e1e8ed;
+            color: #d63b53;
+        }
+
+        .follow-button:hover {
+            background-color: #0d95e8;
+        }
+
+        .blue-button {
+            background-color: #e1e8ed;
+            color: #1da1f2;
+        }
+
+        .blue-button:hover {
+            background-color: #c8d6dd;
+        }
+
+        .like-button:hover,
+        .like-button--active {
+            color: #e1e8ed;
+            background-color: #f3b04e;
+
+        }
+
+
+
+        .block-button:hover,
+        .block-button--active {
+            color: #e1e8ed;
+            background-color: #d63b53;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar__left">
+            <img src="/static/logo.svg" alt="TweetAway Logo" width="70px">
+            <h1>TweetAway</h1>
+        </div>
+        <div class="search-form">
+            <form id="searchForm">
+                <input type="text" id="query" name="query" required placeholder="Search Twitter">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Left Column -->
+        <div class="column left-column">
+            <div class="profile">
+                <img id="profileImage" src="https://via.placeholder.com/80" alt="Profile Picture">
+                <h3 id="profileName">John Doe</h3>
+                <p id="profileUsername">@johndoe</p>
+                <p id="followersCount">Followers: 1,234</p>
+                <p id="followingCount">Following: 1,234</p>
+            </div>
+            <div class="container-buttons">
+                <button id="browseFeedBtn" class="special-button">Home</button>
+                <button id="notificationsBtn" class="special-button">Notifications</button>
+                <button id="directMessagesBtn" class="special-button">Messages</button>
+                <button id="bookmarksBtn" class="special-button">Bookmarks</button>
+                <button id="profileViewBtn" class="special-button">Profile</button>
+                <button id="postTweetBtn" class="special-button2">Tweet</button>
+            </div>
+
+            <div class="footer">
+                <p>Created by <a href="http://scarlettscafe.lenowo.org/about.html" target="_blank">ScarlettPPC</a></p>
+                <p>(C)2025 Version 0.7</p>
+            </div>
+        </div>
+
+        <!-- Middle Column -->
+        <div class="column middle-column">
+
+            <div id="homeFeed" class="hidden">
+                <h2>Home Feed</h2>
+                <div id="feedContent"></div>
+                <button id="loadMoreBtn" style="display: none;">Load More</button>
+            </div>
+
+            <div id="bookmarksFeed" class="hidden">
+                <h2>Bookmarks</h2>
+                <div id="bookmarksFeedContent"></div>
+            </div>
+
+            <div id="notificationsList" class="hidden">
+                <h2>Notifications</h2>
+                <div id="notificationsContent"></div>
+            </div>
+
+            <!-- Search View Section (hidden by default) -->
+            <div id="searchView" class="hidden">
+                <h2>Search Results</h2>
+                <h3>Users</h3>
+                <div id="userResults"></div>
+                <h3>Tweets</h3>
+                <div id="postResults"></div>
+            </div>
+
+            <!-- Profile View Section (hidden by default) -->
+            <div id="profileView" class="hidden">
+                <div class="profile">
+                    <img id="middleBannerImage" src="https://via.placeholder.com/1500x500" alt="Banner"
+                        style="width: 100%; height: auto;">
+                    <img id="middleProfileImage" src="https://via.placeholder.com/80" alt="Profile Picture"
+                        style="width: 80px; height: 80px; border-radius: 50%; margin-top: -40px;">
+                    <h3 id="middleProfileName">John Doe</h3>
+                    <p id="middleProfileUsername">@johndoe</p>
+                    <p id="profileBio">This is the user's bio...</p>
+                    <p id="middleFollowersCount">Followers: 1,234</p>
+                    <p id="middleFollowingCount">Following: 1,234</p>
+                    <button class="follow-button" id="followBtn">Follow</button>
+                    <button class="follow-button" id="unfollowBtn">Unfollow</button>
+                    <button class="block-button" id="blockBtn">Block</button>
+                    <button class="block-button" id="unblockBtn">Unblock</button>
+                </div>
+                <div id="profileTweets">
+                    <h2>Tweets</h2>
+                    <div id="profileContent"></div>
+                </div>
+            </div>
+
+            <div id="messagesList" class="hidden">
+                <h2>Direct Messages</h2>
+                <p>TwiKit doesn't support fetching the list of users previously messaged so this is the next best thing.
+                </p>
+                <form id="fetchUserForm">
+                    <input type="text" id="usernameInput" placeholder="Enter username" required>
+                    <button type="submit">Start Chat</button>
+                </form>
+                <div id="userFetchError" style="color: red;"></div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="column right-column">
+            <div id="tweetDetails" class="tweet-detail hidden">
+                <h3>Tweet Details</h3>
+                <div id="tweetContent"></div>
+                <div id="mediaContent" class="media"></div>
+                <button class="like-button" id="likeTweetBtn">Like</button>
+                <button class="like-button--active hidden" id="unlikeTweetBtn">Liked!</button>
+                <button class="green-button" id="retweetTweetBtn">Retweet</button>
+                <button class="green-button" id="quoteTweetBtn">Quote Tweet</button>
+                <button class="dark-blue-button" id="replyTweetBtn">Reply</button>
+                <button class="dark-blue-button" id="bookmarkTweetBtn">Bookmark</button>
+                <button class="dark-blue-button--active hidden" id="unbookmarkTweetBtn">Bookmarked!</button>
+                <div id="replies" class="replies"></div>
+            </div>
+
+            <div id="chatHistory" class="tweet-detail hidden">
+                <h3>Chat with <span id="chatWithUsername"></span></h3>
+                <div id="chatContent"></div>
+                <form id="sendMessageForm">
+                    <textarea id="messageInput" placeholder="Type your message..." required></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+
+
+
+
+        <script>
+            let quotedTweetLink = "";
+            let currentlyLoggedUser = "";
+            let currentChatUserId = null;
+            let currentChatUsername = null;
+            const searchView = document.getElementById('seachView');
+            const browseFeedBtn = document.getElementById('browseFeedBtn');
+            const postTweetBtn = document.getElementById('postTweetBtn');
+            const bookmarksBtn = document.getElementById('bookmarksBtn');
+            const homeFeed = document.getElementById('homeFeed');
+            const bookmarksFeed = document.getElementById('bookmarksFeed');
+            const bookmarksFeedContent = document.getElementById('bookmarksFeedContent');
+            const postSection = document.getElementById('postSection');
+            const feedContent = document.getElementById('feedContent');
+            const searchResults = document.getElementById('searchResults');
+            const tweetResponse = document.getElementById('tweetResponse');
+            const profileViewBtn = document.getElementById('profileViewBtn');
+            const directMessagesBtn = document.getElementById('directMessagesBtn');
+            const messagesList = document.getElementById('messagesList');
+            const chatHistory = document.getElementById('chatHistory');
+            const messageList = document.getElementById('messageList');
+            const chatWithUsername = document.getElementById('chatWithUsername');
+            const chatContent = document.getElementById('chatContent');
+            const sendMessageForm = document.getElementById('sendMessageForm');
+            const messageInput = document.getElementById('messageInput');
+            const notificationsBtn = document.getElementById('notificationsBtn');
+            const notificationsContent = document.getElementById('notificationsContent');
+            const notificationsList = document.getElementById('notificationsList');
+            const followBtn = document.getElementById('followBtn');
+            const unfollowBtn = document.getElementById('unfollowBtn');
+            const blockBtn = document.getElementById('blockBtn');
+            const unblockBtn = document.getElementById('unblockBtn');
+
+
+            browseFeedBtn.onclick = () => {
+                document.getElementById('profileView').classList.add('hidden');
+                homeFeed.classList.remove('hidden');
+                chatHistory.classList.add('hidden');
+                messagesList.classList.add('hidden');
+                bookmarksFeed.classList.add('hidden');
+                notificationsList.classList.add('hidden');
+                searchView.classList.add('hidden');
+                fetchFeed();
+            };
+
+
+            bookmarksBtn.onclick = () => {
+                document.getElementById('profileView').classList.add('hidden');
+                homeFeed.classList.add('hidden');
+                chatHistory.classList.add('hidden');
+                messagesList.classList.add('hidden');
+                bookmarksFeed.classList.remove('hidden');
+                fetchBookmarks();
+            }
+
+            notificationsBtn.onclick = () => {
+                document.getElementById('profileView').classList.add('hidden');
+                homeFeed.classList.add('hidden');
+                chatHistory.classList.add('hidden');
+                messagesList.classList.add('hidden');
+                bookmarksFeed.classList.add('hidden');
+                notificationsList.classList.remove('hidden');
+                searchView.classList.add('hidden');
+                fetchNotifications();
+            }
+
+            postTweetBtn.onclick = () => {
+                openTweetWindow();
+            };
+
+            profileViewBtn.onclick = () => {
+                viewProfile(currentlyLoggedUser);
+                homeFeed.classList.add('hidden');
+                messagesList.classList.add('hidden');
+                chatHistory.classList.add('hidden');
+                bookmarksFeed.classList.add('hidden');
+            };
+
+            directMessagesBtn.onclick = async () => {
+                document.getElementById('profileView').classList.add('hidden');
+                homeFeed.classList.add('hidden');
+                messagesList.classList.remove('hidden');
+                chatHistory.classList.add('hidden');
+                bookmarksFeed.classList.add('hidden');
+                document.getElementById('searchView').classList.add('hidden');
+
+            };
+
+            // Fetch home feed
+            let nextCursor = null; // Holds the cursor for fetching the next set of tweets.
+
+            async function fetchUserProfile() {
+                try {
+                    const response = await fetch('/current_user');
+                    const data = await response.json();
+
+                    if (data.error) {
+                        console.error(`Error fetching user profile: ${data.error}`);
+                    } else {
+                        // Update the profile section with the user's data
+                        document.getElementById('profileImage').src = data.profile_image_url;
+                        document.getElementById('profileName').textContent = data.name;
+                        document.getElementById('profileUsername').textContent = `@${data.username}`;
+                        document.getElementById('followersCount').textContent = `Followers: ${data.followers}`;
+                        document.getElementById('followingCount').textContent = `Following: ${data.following}`;
+                        currentlyLoggedUser = data.username;
+
+
+
+
+
+
+                    }
+                } catch (error) {
+                    console.error('Error loading profile:', error);
+                }
+            }
+
+
+            async function fetchFeed(cursor = null) {
+                const url = cursor ? `/home_feed?cursor=${encodeURIComponent(cursor)}` : '/home_feed';
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(`Error: ${data.error}`);
+                    document.getElementById('feedContent').innerHTML = `<p>Error loading tweets: ${data.error}</p>`;
+                } else {
+                    // Append tweets to the feedContent
+                    data.tweets.forEach(tweet => {
+                        const tweetDiv = document.createElement('div');
+                        tweetDiv.className = 'tweet';
+                        tweetDiv.innerHTML = `
+                <p><strong>${tweet.author}</strong>: ${tweet.text}</p>
+                <p><small>${new Date(tweet.created_at).toLocaleString()}</small></p>
+            `;
+                        if (tweet.is_liked == true) {
+                            tweetDiv.innerHTML += `
+				<button class="like-button--active" onclick="unlikeTweet('${tweet.id}')">Liked!</button>
+                `;
+                        }
+                        else {
+                            tweetDiv.innerHTML += `
+				<button class="like-button" onclick="likeTweet('${tweet.id}')">Like</button>
+                `;
+                        }
+
+                        tweetDiv.innerHTML += `
+                <button class="dark-blue-button" onclick="replyToTweet('${tweet.id}')">Reply</button>
+                <button class="green-button" onclick="retweet('${tweet.id}')">Retweet</button>
+                <button class="green-button" onclick="quoteTweet('${tweet.id}')">Quote Tweet</button>
+                `;
+                        if (tweet.is_bookmarked == true) {
+                            tweetDiv.innerHTML += `
+                            <button class="dark-blue-button--active" onclick = "unbookmarkTweet('${tweet.id}')">Bookmarked!</button>
+                                `;
+                        }
+                        else {
+                            tweetDiv.innerHTML += `
+                                <button class="dark-blue-button" onclick="bookmarkTweet('${tweet.id}')">Bookmark</button>
+                `;
+                        }
+                        tweetDiv.innerHTML += `
+                <button class="blue-button" onclick="viewTweetDetails('${tweet.id}')">View Details</button>
+                <button class="blue-button" onclick="viewProfile('${tweet.username}')">View Profile</button>
+            `;
+
+                        // Check if the tweet has media URLs and add them to the tweet content
+                        if (tweet.media_urls && tweet.media_urls.length > 0) {
+                            tweet.media_urls.forEach(mediaUrl => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = "Tweet Image";
+                                imgElement.style.maxWidth = "100%"; // Make the image responsive
+
+                                // Make the image clickable to open in a pop-up
+                                imgElement.onclick = () => openMediaInPopup(mediaUrl);
+
+                                tweetDiv.appendChild(imgElement);
+                            });
+                        }
+
+                        // Nested quote
+                        if (tweet.quoted_tweet) {
+                            const quotedTweet = tweet.quoted_tweet;
+                            const quoteDiv = document.createElement('div');
+                            quoteDiv.className = 'tweet quote';
+                            quoteDiv.innerHTML = `
+            <br/>
+            <p><strong>${quotedTweet.author}</strong>: ${quotedTweet.text}</p>
+        `;
+                            tweetDiv.appendChild(quoteDiv);
+                        }
+
+                        // Reply
+                        if (tweet.reply_to) {
+                            const replyTo = tweet.reply_to;
+                            const replyDiv = document.createElement('div');
+                            replyDiv.className = 'tweet reply';
+                            replyDiv.innerHTML = `<p><strong>Replying to:</strong></p>
+            <p><strong>${replyTo.author}</strong>: ${replyTo.text}</p>
+        `;
+                            tweetDiv.insertAdjacentElement('afterbegin', replyDiv);
+                        }
+
+                        document.getElementById('feedContent').appendChild(tweetDiv);
+                    });
+
+                    // Update the nextCursor for pagination
+                    nextCursor = data.next_cursor;
+
+                    // Show or hide the Load More button based on nextCursor
+                    const loadMoreBtn = document.getElementById('loadMoreBtn');
+                    if (nextCursor) {
+                        loadMoreBtn.style.display = 'block'; // Show button if more tweets are available
+                    } else {
+                        loadMoreBtn.style.display = 'none'; // Hide button if no more tweets
+                    }
+                }
+            }
+
+            async function fetchBookmarks() {
+                const response = await fetch('/bookmarks_feed');
+                const data = await response.json();
+
+                const feedContent = document.getElementById('bookmarksFeedContent');
+
+                // Clear the existing content in the feed
+                feedContent.innerHTML = '';
+
+                if (data.error) {
+                    console.error(`Error: ${data.error}`);
+                    feedContent.innerHTML = `<p>Error loading bookmarks: ${data.error}</p>`;
+                } else {
+                    // Append tweets to the feedContent
+                    data.tweets.forEach(tweet => {
+                        const tweetDiv = document.createElement('div');
+                        tweetDiv.className = 'tweet';
+                        tweetDiv.innerHTML = `
+                <p><strong>${tweet.author}</strong>: ${tweet.text}</p>
+                <p><small>${new Date(tweet.created_at).toLocaleString()}</small></p>
+            `;
+                        if (tweet.is_liked == true) {
+                            tweetDiv.innerHTML += `
+				<button class="like-button--active" onclick="unlikeTweet('${tweet.id}')">Liked!</button>
+                `;
+                        }
+                        else {
+                            tweetDiv.innerHTML += `
+				<button class="like-button" onclick="likeTweet('${tweet.id}')">Like</button>
+                `;
+                        }
+
+                        tweetDiv.innerHTML += `
+                <button class="dark-blue-button" onclick="replyToTweet('${tweet.id}')">Reply</button>
+                <button class="green-button" onclick="retweet('${tweet.id}')">Retweet</button>
+                <button class="green-button" onclick="quoteTweet('${tweet.id}')">Quote Tweet</button>
+                <button class="dark-blue-button--active" onclick = "unbookmarkTweet('${tweet.id}')">Bookmarked!</button>
+                <button class="blue-button" onclick="viewTweetDetails('${tweet.id}')">View Details</button>
+                <button class="blue-button" onclick="viewProfile('${tweet.username}')">View Profile</button>
+            `;
+
+
+
+                        // Check if the tweet has media URLs and add them to the tweet content
+                        if (tweet.media_urls && tweet.media_urls.length > 0) {
+                            tweet.media_urls.forEach(mediaUrl => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = "Tweet Image";
+                                imgElement.style.maxWidth = "100%"; // Make the image responsive
+
+                                // Make the image clickable to open in a pop-up
+                                imgElement.onclick = () => openMediaInPopup(mediaUrl);
+
+                                tweetDiv.appendChild(imgElement);
+                            });
+                        }
+
+
+
+                        feedContent.appendChild(tweetDiv);
+                    });
+                }
+            }
+
+            async function fetchNotifications() {
+                const response = await fetch('/notifications_list');
+                const data = await response.json();
+
+                const feedContent = document.getElementById('notificationsContent');
+
+                // Clear the existing content in the feed
+                feedContent.innerHTML = '';
+
+                if (data.error) {
+                    console.error(`Error: ${data.error}`);
+                    feedContent.innerHTML = `<p>Error loading notifications: ${data.error}</p>`;
+                }
+                else {
+                    // Append tweets to the feedContent
+                    data.notifications.forEach(notification => {
+                        const notiDiv = document.createElement('div');
+                        notiDiv.className = 'notification';
+                        notiDiv.innerHTML = `
+                <p><strong>${notification.from_user}</strong> ${notification.message}</p>
+            `;
+
+                        // Check if the tweet has media URLs and add them to the tweet content
+                        if (notification.context_text) {
+                            notiDiv.innerHTML += `
+                <p>${notification.context_text}</p>
+                <p>${notification.context_id}</p>
+            `;
+                            const viewDetailsButton = document.createElement('button');
+                            viewDetailsButton.textContent = 'View Details';
+                            viewDetailsButton.onclick = () => viewTweetDetails(notification.context_id);
+                            notiDiv.appendChild(viewDetailsButton);
+                        }
+
+                        feedContent.appendChild(notiDiv);
+                    });
+                }
+            }
+
+
+            async function likeTweet(tweetId) {
+                const response = await fetch(`/like/${tweetId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error liking tweet: ${data.error}`);
+                } else {
+                    alert('Tweet liked successfully!');
+                }
+            }
+
+            async function bookmarkTweet(tweetId) {
+                const response = await fetch(`/bookmark/${tweetId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error bookmarking tweet: ${data.error}`);
+                } else {
+                    alert('Tweet bookmarked successfully!');
+                }
+            }
+
+            async function unlikeTweet(tweetId) {
+                const response = await fetch(`/unlike/${tweetId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error unliking tweet: ${data.error}`);
+                } else {
+                    alert('Tweet unliked successfully!');
+                }
+            }
+
+            async function followUser(userId) {
+                const response = await fetch(`/follow/${userId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error following user: ${data.error}`);
+                } else {
+                    alert('User followed successfully!');
+                }
+            }
+
+            async function unfollowUser(userId) {
+                const response = await fetch(`/unfollow/${userId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error unfollowing user: ${data.error}`);
+                } else {
+                    alert('User unfollowed successfully!');
+                }
+            }
+
+            async function blockUser(userId) {
+                const response = await fetch(`/block/${userId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error blocking user: ${data.error}`);
+                } else {
+                    alert('User blocked successfully!');
+                }
+            }
+
+            async function unblockUser(userId) {
+                const response = await fetch(`/unblock/${userId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error unblocking user: ${data.error}`);
+                } else {
+                    alert('User unblocked successfully!');
+                }
+            }
+
+            async function unbookmarkTweet(tweetId) {
+                const response = await fetch(`/unbookmark/${tweetId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error unbookmarking tweet: ${data.error}`);
+                } else {
+                    alert('Tweet unbookmarked successfully!');
+                }
+            }
+
+            async function retweet(tweetId) {
+                const response = await fetch(`/retweet/${tweetId}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error retweet: ${data.error}`);
+                } else {
+                    alert('Retweeted successfully!');
+                }
+            }
+
+            // Reply to a Tweet
+            async function replyToTweet(tweetId) {
+                openTweetWindow({ replyTo: tweetId });
+            }
+
+            // Quote a Tweet
+            async function quoteTweet(tweetId) {
+                const quotedTweetLink = `https://twitter.com/user/status/${tweetId}`;
+                openTweetWindow({ attachmentUrl: quotedTweetLink });
+            }
+
+            // Load tweets when the page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                fetchFeed();
+                fetchUserProfile();
+            });
+
+
+
+
+            // Search tweets
+            const searchForm = document.getElementById('searchForm');
+            searchForm.onsubmit = async (event) => {
+                event.preventDefault();
+                const query = document.getElementById('query').value;
+                const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                searchResults.textContent = JSON.stringify(data, null, 2);
+            };
+
+            // Open the post section in a new window
+            async function openTweetWindow(params = {}) {
+                const urlParams = new URLSearchParams(params).toString();
+                const newWindow = window.open(`/tweet_form.html?${urlParams}`, '_blank', 'width=600,height=400');
+                if (!newWindow) {
+                    alert("Pop-up blocked! Please allow pop-ups for this site.");
+                }
+            }
+
+            function openMediaInPopup(mediaUrl) {
+                const newWindow = window.open(mediaUrl, '_blank', 'width=400,height=400');
+                if (!newWindow) {
+                    alert("Pop-up blocked! Please allow pop-ups for this site.");
+                }
+            }
+
+            // Show tweet on right column with details
+            async function viewTweetDetails(tweetId) {
+                currentTweetId = tweetId;
+                const response = await fetch(`/tweet/${tweetId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(`Error fetching tweet details: ${data.error}`);
+                } else {
+                    const tweetDetailsDiv = document.getElementById('tweetDetails');
+                    const tweetContentDiv = document.getElementById('tweetContent');
+                    const mediaContentDiv = document.getElementById('mediaContent');
+
+                    // Clear previous content
+                    tweetDetailsDiv.classList.remove('hidden');
+                    tweetContentDiv.innerHTML = '';
+                    mediaContentDiv.innerHTML = '';
+
+                    // Show the original tweet if it exists
+                    if (data.reply_to) {
+                        const originalTweet = data.reply_to;
+                        const originalTweetDiv = document.createElement('div');
+                        originalTweetDiv.className = 'tweet original-tweet';
+                        originalTweetDiv.innerHTML = `
+                <p><strong>${originalTweet.author}</strong>: ${originalTweet.text}</p>
+                <p><small>${new Date(originalTweet.created_at).toLocaleString()}</small></p>
+                <button onclick="viewTweetDetails('${originalTweet.id}')">View Details</button>
+            `;
+                        tweetContentDiv.appendChild(originalTweetDiv);
+                    }
+
+                    // Show the current tweet
+                    const currentTweetDiv = document.createElement('div');
+                    currentTweetDiv.className = 'tweet current-tweet';
+                    currentTweetDiv.innerHTML = `
+            <p><strong>${data.author}</strong>: ${data.text}</p>
+            <p><small>${new Date(data.created_at).toLocaleString()}</small></p>
+            <p>Likes: ${data.likes_count}</p>
+            <p>Retweets: ${data.retweet_count}</p>
+            <p>Quote Tweets: ${data.quote_count}</p>
+            <p>Views: ${data.view_count}</p>
+        `;
+
+                    // Append media for the current tweet
+                    if (data.media_urls && data.media_urls.length > 0) {
+                        data.media_urls.forEach(mediaUrl => {
+                            const fileExtension = mediaUrl.split('.').pop().toLowerCase();
+                            const mediaElement = document.createElement(fileExtension === 'mp4' ? 'video' : 'img');
+                            if (fileExtension === 'mp4') {
+                                mediaElement.src = mediaUrl;
+                                mediaElement.controls = true;
+                            } else {
+                                mediaElement.src = mediaUrl;
+                                mediaElement.style.maxWidth = '100%';
+                                mediaElement.onclick = () => openMediaInPopup(mediaUrl);
+                            }
+                            mediaContentDiv.appendChild(mediaElement);
+                        });
+                    }
+
+                    // Append the quoted tweet inside the current tweet
+                    if (data.quoted_tweet) {
+                        const quotedTweet = data.quoted_tweet;
+                        const quotedTweetDiv = document.createElement('div');
+                        quotedTweetDiv.className = 'tweet quote';
+                        quotedTweetDiv.style.borderLeft = '3px solid #ccc';
+                        quotedTweetDiv.style.marginTop = '10px';
+                        quotedTweetDiv.style.paddingLeft = '10px';
+                        quotedTweetDiv.innerHTML = `
+                <p><strong>${quotedTweet.author}</strong>: ${quotedTweet.text}</p>
+                <p><small>${new Date(quotedTweet.created_at).toLocaleString()}</small></p>
+                <p>Likes: ${quotedTweet.likes_count}, Retweets: ${quotedTweet.retweet_count}, Quotes: ${quotedTweet.quote_count}</p>
+                <button onclick="viewTweetDetails('${quotedTweet.id}')">View Details</button>
+            `;
+
+                        // Append media for the quoted tweet
+                        if (quotedTweet.media_urls && quotedTweet.media_urls.length > 0) {
+                            quotedTweet.media_urls.forEach(mediaUrl => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = "Quoted Tweet Image";
+                                imgElement.style.maxWidth = "100%"; // Make the image responsive
+                                quotedTweetDiv.appendChild(imgElement);
+                            });
+                        }
+
+                        // Append the quoted tweet to the current tweet div
+                        currentTweetDiv.appendChild(quotedTweetDiv);
+                    }
+
+                    tweetContentDiv.appendChild(currentTweetDiv);
+
+
+                    // Show the buttons for interaction
+                    if (data.is_liked == true) {
+                        document.getElementById('unlikeTweetBtn').classList.remove('hidden');
+                        document.getElementById('likeTweetBtn').classList.add('hidden');
+                        document.getElementById('unlikeTweetBtn').onclick = () => unlikeTweet(tweetId);
+                    }
+                    else {
+                        document.getElementById('likeTweetBtn').onclick = () => likeTweet(tweetId);
+                    }
+
+                    if (data.is_bookmarked == true) {
+                        document.getElementById('unbookmarkTweetBtn').classList.remove('hidden');
+                        document.getElementById('bookmarkTweetBtn').classList.add('hidden');
+                        document.getElementById('unbookmarkTweetBtn').onclick = () => unbookmarkTweet(tweetId);
+                    }
+                    else {
+
+                    }
+
+                    document.getElementById('retweetTweetBtn').onclick = () => retweet(tweetId);
+                    document.getElementById('quoteTweetBtn').onclick = () => quoteTweet(tweetId);
+                    document.getElementById('replyTweetBtn').onclick = () => replyToTweet(tweetId);
+
+                    //display replies
+                    const repliesResponse = await fetch(`/tweet/${tweetId}/replies`);
+                    const repliesData = await repliesResponse.json();
+
+                    const repliesDiv = document.getElementById('replies');
+                    repliesDiv.innerHTML = ''; // Clear previous replies
+                    repliesData.replies.forEach(reply => {
+                        const replyDiv = document.createElement('div');
+                        replyDiv.className = 'reply';
+                        replyDiv.innerHTML = `
+                    <p><strong>${reply.author}</strong>: ${reply.text}</p>
+                    <p><small>${new Date(reply.created_at).toLocaleString()}</small></p>
+                    <p>Likes: ${reply.likes_count}, Replies: ${reply.reply_count}, Quotes: ${reply.quote_count}</p>
+                    `;
+                        if (reply.is_liked == true) {
+                            replyDiv.innerHTML += `
+				<button class="like-button--active" onclick="unlikeTweet('${reply.id}')">Liked!</button>
+                `;
+                        }
+                        else {
+                            replyDiv.innerHTML += `
+				<button class="like-button" onclick="likeTweet('${reply.id}')">Like</button>
+                `;
+                        }
+
+                        replyDiv.innerHTML += `
+                    <button class="btn dark-blue-button" onclick="replyToTweet('${reply.id}')">Reply</button>
+                    <button class="btn green-button" onclick="quoteTweet('${reply.id}')">Quote</button>
+                    <button class="blue-button" onclick="viewTweetDetails('${reply.id}')">View Details</button>
+                    <button class="blue-button" onclick="viewProfile('${reply.username}')">View Profile</button>
+                `;
+
+                        if (reply.media_urls) {
+                            reply.media_urls.forEach(mediaUrl => {
+                                const mediaElement = document.createElement('img');
+                                mediaElement.src = mediaUrl;
+                                mediaElement.alt = "Reply Media";
+                                replyDiv.appendChild(mediaElement);
+                            });
+                        }
+                        repliesDiv.appendChild(replyDiv);
+                    });
+
+                }
+            }
+
+            // Handle clicking the View Profile button
+            async function viewProfile(username) {
+                const response = await fetch(`/user_profile/${username}`);
+                const data = await response.json();
+                if (data.error) {
+                    console.error(`Error: ${data.error}`);
+                }
+                else {
+                    // Switch to profile view layout
+                    document.getElementById('homeFeed').classList.add('hidden');
+                    document.getElementById('profileView').classList.remove('hidden');
+                    document.getElementById('bookmarksFeed').classList.add('hidden');
+                    document.getElementById('notificationsList').classList.add('hidden');
+                    document.getElementById('searchView').classList.add('hidden');
+
+                    // Update profile section
+                    document.getElementById('middleProfileName').textContent = data.middleName;
+                    document.getElementById('middleProfileUsername').textContent = `@${data.middleUsername}`;
+                    document.getElementById('middleFollowersCount').textContent = `Followers: ${data.middleFollowers}`;
+                    document.getElementById('middleFollowingCount').textContent = `Following: ${data.middleFollowing}`;
+                    document.getElementById('middleProfileImage').src = data.middleProfileImage;
+                    document.getElementById('middleBannerImage').src = data.bannerUrl;
+                    document.getElementById('profileBio').textContent = data.bio;
+                    if (data.is_followable == false) {
+                        document.getElementById('followBtn').classList.add('hidden');
+                        document.getElementById('unfollowBtn').classList.add('hidden');
+                        document.getElementById('blockBtn').classList.add('hidden');
+                        document.getElementById('unblockBtn').classList.add('hidden');
+                    }
+                    else {
+                        if (data.is_followed == false) {
+                            alert('IS NOT FOLLOWED');
+                            document.getElementById('followBtn').classList.remove('hidden');
+                        }
+                        else {
+                            alert('IS FOLLOWED!!!!');
+                            document.getElementById('followBtn').classList.add('hidden');
+                            document.getElementById('unfollowBtn').classList.remove('hidden');
+                        }
+                    }
+
+                    document.getElementById('followBtn').onclick = () => followUser(data.middleId);
+                    document.getElementById('unfollowBtn').onclick = () => unfollowUser(data.middleId);
+                    document.getElementById('blockBtn').onclick = () => blockUser(data.middleId);
+                    document.getElementById('unblockBtn').onclick = () => unblockUser(data.middleId);
+
+                    // Display the user's tweets
+                    const tweetsContainer = document.getElementById('profileTweets');
+                    tweetsContainer.innerHTML = ''; // Clear previous tweets
+                    data.tweets.forEach(tweet => {
+                        const tweetDiv = document.createElement('div');
+                        tweetDiv.className = 'tweet';
+                        tweetDiv.innerHTML = `
+                <p><strong>${tweet.author}</strong>: ${tweet.text}</p>
+                <p><small>${new Date(tweet.created_at).toLocaleString()}</small></p>
+                `;
+                        if (tweet.is_liked == true) {
+                            tweetDiv.innerHTML += `
+				<button class="like-button--active" onclick="unlikeTweet('${tweet.id}')">Liked!</button>
+                `;
+                        }
+                        else {
+                            tweetDiv.innerHTML += `
+				<button class="like-button--active" onclick="likeTweet('${tweet.id}')">Like</button>
+                `;
+                        }
+
+                        tweetDiv.innerHTML += `
+                <button class="dark-blue-button" onclick="replyToTweet('${tweet.id}')">Reply</button>
+                <button class="green-button" onclick="retweet('${tweet.id}')">Retweet</button>
+                <button class="green-button" onclick="quoteTweet('${tweet.id}')">Quote Tweet</button>
+                                `;
+                        if (tweet.is_bookmarked == true) {
+                            tweetDiv.innerHTML += `
+                            <button class="dark-blue-button--active" onclick = "unbookmarkTweet('${tweet.id}')">Bookmarked!</button>
+                                `;
+                        }
+                        else {
+                            tweetDiv.innerHTML += `
+                                <button class="dark-blue-button" onclick="bookmarkTweet('${tweet.id}')">Bookmark</button>
+                `;
+                        }
+                        tweetDiv.innerHTML += `
+                <button class="blue-button" onclick="viewTweetDetails('${tweet.id}')">View Details</button>
+            `;
+                        if (tweet.quoted_tweet) {
+                            const quotedTweet = tweet.quoted_tweet;
+                            const quoteDiv = document.createElement('div');
+                            quoteDiv.className = 'tweet quote';
+                            quoteDiv.innerHTML = `
+            <br/>
+            <p><strong>${quotedTweet.author}</strong>: ${quotedTweet.text}</p>
+        `;
+                            tweetDiv.appendChild(quoteDiv);
+                        }
+
+                        // Reply
+                        if (tweet.reply_to) {
+                            const replyTo = tweet.reply_to;
+                            const replyDiv = document.createElement('div');
+                            replyDiv.className = 'tweet reply';
+                            replyDiv.innerHTML = `<p><strong>Replying to:</strong></p>
+            <p><strong>${replyTo.author}</strong>: ${replyTo.text}</p>
+        `;
+                            tweetDiv.insertAdjacentElement('afterbegin', replyDiv);
+                        }
+
+                        if (tweet.media_urls && tweet.media_urls.length > 0) {
+                            tweet.media_urls.forEach(mediaUrl => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = "Tweet Image";
+                                imgElement.style.maxWidth = "100%"; // Make the image responsive
+                                tweetDiv.appendChild(imgElement);
+                            });
+                        }
+                        tweetsContainer.appendChild(tweetDiv);
+                    });
+                }
+            }
+
+
+            fetchUserForm.onsubmit = async (event) => {
+                event.preventDefault();
+                const username = usernameInput.value;
+
+                try {
+                    const response = await fetch(`/get_user_id/${username}`);
+                    const data = await response.json();
+                    if (false) {
+                        userFetchError.textContent = `Error: ${data.error}`;
+                    } else {
+                        currentChatUserId = data.user_id;
+                        currentChatUsername = username;
+                        openChat(currentChatUserId);
+                    }
+                } catch (error) {
+                    userFetchError.textContent = `Error fetching user ID: ${error}`;
+                }
+            };
+
+            async function openChat(currentChatUserId) {
+                chatHistory.classList.remove('hidden');
+                chatWithUsername.textContent = currentChatUsername;
+                loadChatHistory(currentChatUserId);
+            }
+
+            async function loadChatHistory(userId) {
+                const response = await fetch(`/direct_messages/${userId}`);
+                const data = await response.json();
+                chatContent.innerHTML = '';
+
+                if (data.error) {
+                    chatContent.innerHTML = `<p>Error loading chat history: ${data.error}</p>`;
+                } else {
+                    data.messages.forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = `${message.sender}: ${message.text}`;
+                        chatContent.appendChild(messageDiv);
+                    });
+                }
+            }
+
+            sendMessageForm.onsubmit = async (event) => {
+                event.preventDefault();
+                const message = messageInput.value;
+                const response = await fetch(`/send_message/${currentChatUserId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: message }),
+                });
+                const data = await response.json();
+                if (data.error) {
+                    alert(`Error sending message: ${data.error}`);
+                } else {
+                    messageInput.value = '';
+                    loadChatHistory(currentChatUserId);
+                }
+            };
+
+            document.getElementById('searchForm').onsubmit = async (event) => {
+                event.preventDefault();
+                const query = document.getElementById('query').value;
+
+                const response = await fetch(`/search/${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                const userResultsDiv = document.getElementById('userResults');
+                const tweetResultsDiv = document.getElementById('postResults');
+                document.getElementById('searchView').classList.remove('hidden');
+                homeFeed.classList.add('hidden');
+                chatHistory.classList.add('hidden');
+                messagesList.classList.add('hidden');
+                bookmarksFeed.classList.add('hidden');
+                notificationsList.classList.add('hidden');
+                userResultsDiv.innerHTML = '';
+                tweetResultsDiv.innerHTML = '';
+
+                // Display user results
+                data.user_results.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-card';
+                    userDiv.innerHTML = `
+                <div class="user-info">
+                        <img src="${user.searchResultProfileImage}" alt="Profile Picture">
+                        <div class="user-details">
+                            <strong>${user.searchResultName}</strong>
+                            <p>@${user.searchResultUsername}</p>
+                        </div>
+                    </div>
+                <div class="user-actions">
+                        <button class="follow-button" onclick="followUser('${user.searchResultId}')">Follow</button>
+                        <button class="blue-button" onclick="viewProfile('${user.searchResultUsername}')">View Profile</button>
+                    </div>
+            `;
+                    userResultsDiv.appendChild(userDiv);
+                });
+
+                // Display post results
+                tweetResultsDiv.innerHTML = ''; // Clear previous tweets
+                data.tweet_results.forEach(tweet => {
+                    const tweetDiv = document.createElement('div');
+                    tweetDiv.className = 'tweet';
+                    tweetDiv.innerHTML = `
+                <p><strong>${tweet.author}</strong>: ${tweet.text}</p>
+                <p><small>${new Date(tweet.created_at).toLocaleString()}</small></p>
+                `;
+                    if (tweet.is_liked == true) {
+                        tweetDiv.innerHTML += `
+				<button onclick="unlikeTweet('${tweet.id}')">Liked!</button>
+                `;
+                    }
+                    else {
+                        tweetDiv.innerHTML += `
+				<button onclick="likeTweet('${tweet.id}')">Like</button>
+                `;
+                    }
+
+                    tweetDiv.innerHTML += `
+                <button class="dark-blue-button" onclick="replyToTweet('${tweet.id}')">Reply</button>
+                <button class="green-button" onclick="retweet('${tweet.id}')">Retweet</button>
+                <button class="green-button" onclick="quoteTweet('${tweet.id}')">Quote Tweet</button>
+                                `;
+                    if (tweet.is_bookmarked == true) {
+                        tweetDiv.innerHTML += `
+                            <button class="dark-blue-button--active" onclick = "unbookmarkTweet('${tweet.id}')">Bookmarked!</button>
+                                `;
+                    }
+                    else {
+                        tweetDiv.innerHTML += `
+                                <button class="dark-blue-button" onclick="bookmarkTweet('${tweet.id}')">Bookmark</button>
+                `;
+                    }
+                    tweetDiv.innerHTML += `
+                <button class="blue-button" onclick="viewTweetDetails('${tweet.id}')">View Details</button>
+            `;
+                    if (tweet.quoted_tweet) {
+                        const quotedTweet = tweet.quoted_tweet;
+                        const quoteDiv = document.createElement('div');
+                        quoteDiv.className = 'tweet quote';
+                        quoteDiv.innerHTML = `
+            <br/>
+            <p><strong>${quotedTweet.author}</strong>: ${quotedTweet.text}</p>
+        `;
+                        tweetDiv.appendChild(quoteDiv);
+                    }
+
+                    // Reply
+                    if (tweet.reply_to) {
+                        const replyTo = tweet.reply_to;
+                        const replyDiv = document.createElement('div');
+                        replyDiv.className = 'tweet reply';
+                        replyDiv.innerHTML = `<p><strong>Replying to:</strong></p>
+            <p><strong>${replyTo.author}</strong>: ${replyTo.text}</p>
+        `;
+                        tweetDiv.insertAdjacentElement('afterbegin', replyDiv);
+                    }
+
+                    if (tweet.media_urls && tweet.media_urls.length > 0) {
+                        tweet.media_urls.forEach(mediaUrl => {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = mediaUrl;
+                            imgElement.alt = "Tweet Image";
+                            imgElement.style.maxWidth = "100%"; // Make the image responsive
+                            tweetDiv.appendChild(imgElement);
+                        });
+                    }
+                    tweetResultsDiv.appendChild(tweetDiv);
+                });
+            };
+        </script>
+
+</body>
+
+</html>
