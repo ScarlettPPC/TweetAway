@@ -1,8 +1,8 @@
+![logo](https://github.com/user-attachments/assets/9249b542-e559-4546-be3e-c9be1db2efdf)
 # TweetAway
  A third-part Twitter client written in Python
  By ScarlettPPC 2024
 
-How to set up:
 Get your Twitter cookie using an extension called "Get cookies.txt LOCALLY", available on Firefox and Chrome:
 1. Install extension
 2. Navigate to twitter.com
